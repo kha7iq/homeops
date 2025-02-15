@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: talos-backup-creds
+  namespace: talos-backup
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  data:
+    - secretKey: bucket-secret
+      remoteRef:
+        key: talos-backup-bucket-secret

@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: talos-backup
+spec:
+  schedule: "0 */6 * * *"  # Run every 6 hours
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: talos-backup
+            image: ghcr.io/siderolabs/talos-backup:v0.1.0-beta.2-1-g9ccc125
+            workingDir: /tmp
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: AWS_ACCESS_KEY_ID
+                value: talos-etcd-backup-account
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom: 
+                  secretKeyRef:
+                    name: talos-backup-creds
+                    key: bucket-secret
+              - name: AWS_REGION
+                value: us-west-2
+              - name: CUSTOM_S3_ENDPOINT
+                value: "http://192.168.0.20:9000"
+              - name: BUCKET
+                value: talos-backups
+              - name: CLUSTER_NAME
+                value: "homeOps"
+              - name: DISABLE_ENCRYPTION
+                value: "true"
+              - name: USE_PATH_STYLE
+                value: "false"
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                  - ALL
+            command:
+            - /talos-backup
+            volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /var/run/secrets/talos.dev
+              name: talos-secrets
+          restartPolicy: OnFailure
+          volumes:
+          - emptyDir: {}
+            name: tmp
+          - name: talos-secrets
+            secret:
+              secretName: talos-backup-secrets
