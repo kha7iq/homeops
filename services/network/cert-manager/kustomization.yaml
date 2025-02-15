@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - cloudlfare-api-token.yml
+  - cluster-issuer.yaml
+
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: '-10'
+
+
+helmCharts:
+  - name: cert-manager
+    repo: https://charts.jetstack.io
+    version: v1.15.3
+    releaseName: cert-manager
+    namespace: cert-manager
+    valuesFile: values.yaml
