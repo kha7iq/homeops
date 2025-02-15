@@ -1,0 +1,21 @@
+# Source: external-secrets/templates/servicemonitor.yaml
+apiVersion: "monitoring.coreos.com/v1"
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/name: external-secrets-servicemonitor
+  name: external-secrets-servicemonitor
+  namespace: external-secrets
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: external-secrets
+      app.kubernetes.io/instance: external-secrets
+  namespaceSelector:
+    matchNames:
+    - external-secrets
+  endpoints:
+  - port: metrics
+    interval: 30s
+    scrapeTimeout: 25s
+    honorLabels: false

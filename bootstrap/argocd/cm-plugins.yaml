@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp-plugin
+  namespace: argocd
+data:
+  avp.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-vault-plugin
+    spec:
+      allowConcurrency: true
+      discover:
+        find:
+          command:
+            - sh
+            - "-c"
+            - 'find . \( -name "kustomization.yaml" -o -name "ks.yaml" \)'
+      generate:
+        command:
+          - sh
+          - "-c"
+          - "kustomize build . --enable-helm | argocd-vault-plugin generate -"
+      lockRepo: false

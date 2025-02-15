@@ -1,0 +1,25 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: bitwarden-cluster-secretsmanager
+  annotations:
+      argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  provider:
+    bitwardensecretsmanager:
+      apiURL: https://api.bitwarden.com
+      identityURL: https://identity.bitwarden.com
+      auth:
+        secretRef:
+          credentials:
+            key: token
+            name: bitwarden-access-token
+            namespace: external-secrets
+      bitwardenServerSDKURL: https://bitwarden-sdk-server.external-secrets.svc.cluster.local:9998
+      caProvider:
+        type: Secret
+        name: store-ca-bundle
+        namespace: external-secrets
+        key: ca.crt
+      organizationID: ORGANIZATION_ID
+      projectID: PROJECT_ID

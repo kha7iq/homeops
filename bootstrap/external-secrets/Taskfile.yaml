@@ -1,0 +1,116 @@
+version: '3'
+
+tasks:
+  generate-certs:
+    desc: "Generate SSL certificates"
+    cmds:
+      - echo "Generating CA private key (2048 bits)..."
+      - |
+        openssl genpkey \
+        -algorithm RSA \
+        -out certs/homeOpsCA.key \
+        -pkeyopt rsa_keygen_bits:2048
+      - echo "Generating self-signed CA certificate (10 years validity)..."
+      - |
+        openssl req -x509 -new \
+        -key certs/homeOpsCA.key \
+        -sha256 \
+        -days 3650 \
+        -out certs/homeOpsCA.crt \
+        -subj "/CN=homeOpsCA"
+      - echo "Generating server private key (2048 bits)..."
+      - |
+        openssl genpkey \
+        -algorithm RSA \
+        -out certs/bitwarden-sdk-server.key \
+        -pkeyopt rsa_keygen_bits:2048
+      - echo "Generating Certificate Signing Request (CSR)..."
+      - |
+        openssl req -new \
+        -key certs/bitwarden-sdk-server.key \
+        -out certs/bitwarden-sdk-server.csr \
+        -config certs/csr.conf
+      - echo "Signing CSR with CA certificate (3 years validity)..."
+      - |
+        openssl x509 -req -in certs/bitwarden-sdk-server.csr \
+        -CA certs/homeOpsCA.crt \
+        -CAkey certs/homeOpsCA.key \
+        -CAcreateserial \
+        -out certs/bitwarden-sdk-server.crt \
+        -days 1095 -sha256 \
+        -extfile certs/csr.conf \
+        -extensions v3_req
+      - echo "SSL certificates generated."
+
+  generate-secret:
+    desc: "Create Kubernetes secret and output to a file"
+    cmds:
+      - echo "Generating Kubernetes secret (bitwarden-tls-certs) in the 'external-secrets' namespace..."
+      - |
+        kubectl create secret generic bitwarden-tls-certs \
+          --from-file=tls.crt=certs/bitwarden-sdk-server.crt \
+          --from-file=tls.key=certs/bitwarden-sdk-server.key \
+          --from-file=ca.crt=certs/homeOpsCA.crt \
+          --namespace=external-secrets \
+          --dry-run=client -o yaml > certs/bitwarden-tls-certs.yaml
+      - |
+        kubectl create secret generic store-ca-bundle \
+          --from-file=ca.crt=certs/homeOpsCA.crt \
+          --namespace=external-secrets \
+          --dry-run=client -o yaml > certs/cluster-store-ca-bundle.yaml
+
+  check-namespace:
+    desc: Check if the namespace 'external-secrets' exists and create it if not
+    cmds:
+      - |
+        if kubectl get namespace external-secrets > /dev/null 2>&1; then
+          echo "Namespace 'external-secrets' already exists.";
+        else
+          kubectl create namespace external-secrets;
+          echo "Namespace 'external-secrets' created.";
+        fi
+
+  apply-secret:
+    desc: "Apply secret to the Kubernetes cluster"
+    cmds:
+      - echo "Applying secrets in external-secrets namespace..."
+      - |
+        source .env && \
+        kubectl create secret generic bitwarden-access-token \
+        --from-literal=token=$BITWARDEN_MACHINE_TOKEN --namespace=external-secrets
+      - |
+        kubectl apply -f certs/bitwarden-tls-certs.yaml --namespace=external-secrets
+      - |
+        kubectl apply -f certs/cluster-store-ca-bundle.yaml --namespace=external-secrets
+      - echo "bitwarden-tls-certs and store-ca-bundle successfully created in 'external-secrets' namespace."
+
+  cleanup:
+    desc: "Cleanup all generated files"
+    cmds:
+      - echo "Deleting generated files..."
+      - |
+        rm -f certs/homeOpsCA.key \
+        certs/homeOpsCA.crt certs/homeOpsCA.srl \
+        certs/bitwarden-sdk-server.key \
+        certs/bitwarden-sdk-server.crt \
+        certs/bitwarden-sdk-server.csr \
+        certs/bitwarden-tls-certs.yaml \
+        certs/cluster-store-ca-bundle.yaml
+      - echo "Cleanup completed."
+
+  apply-kustomization:
+    desc: "Build and apply the kustomization of external-secrets"
+    cmds:
+      - echo "Building and applying kustomization for external-secrets..."
+      - |
+        kustomize build . --enable-helm | kubectl apply -f -
+      - echo "Kustomization applied."
+
+  all:
+    desc: "Generate self-signed certificates, Kubernetes secret file, apply secret, and apply kustomization"
+    cmds:
+      - task check-namespace
+      - task generate-certs
+      - task generate-secret
+      - task apply-secret
+      - task apply-kustomization

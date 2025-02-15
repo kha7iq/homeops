@@ -1,0 +1,25 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: homeops-private-key
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  target:
+    template:
+      metadata:
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      data:
+        url: git@gitlab.com:ak-home-lab/homeops.git
+        sshPrivateKey: |
+         {{ .argocd_repo_key | b64dec }}
+  data:
+    - secretKey: argocd_repo_key
+      remoteRef:
+        key: argocd-repo-key

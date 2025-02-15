@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  VAULT_ADDR: Zm9v
+  AVP_AUTH_TYPE: Zm9v
+  AVP_GITHUB_TOKEN: Zm9v
+  AVP_TYPE: Zm9v
+kind: Secret
+metadata:
+  name: vault-configuration
+  namespace: argocd
+type: Opaque

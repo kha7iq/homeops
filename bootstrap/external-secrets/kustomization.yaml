@@ -1,0 +1,43 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: external-secrets
+    repo: https://charts.external-secrets.io
+    version: 0.10.4
+    releaseName: "external-secrets"
+    namespace: external-secrets
+    valuesFile: values.yaml
+
+
+resources:
+  - clusterStore.yaml
+  - servicemonitor.yaml
+
+configMapGenerator:
+  - name: org-config
+    envs:
+      - .env
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: org-config
+      fieldPath: data.ORGANIZATION_ID
+    targets:
+      - select:
+          kind: ClusterSecretStore
+          name: bitwarden-cluster-secretsmanager
+        fieldPaths:
+          - spec.provider.bitwardensecretsmanager.organizationID
+
+  - source:
+      kind: ConfigMap
+      name: org-config
+      fieldPath: data.PROJECT_ID
+    targets:
+      - select:
+          kind: ClusterSecretStore
+          name: bitwarden-cluster-secretsmanager
+        fieldPaths:
+          - spec.provider.bitwardensecretsmanager.projectID

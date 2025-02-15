@@ -1,0 +1,159 @@
+crds:
+  install: true
+  keep: true
+global:
+  domain: argocd.homelab.pk
+  image:
+    repository: quay.io/argoproj/argocd
+    # tag: "v2.13.4"
+    imagePullPolicy: IfNotPresent
+configs:
+  cm:
+    url: https://argocd.homelab.pk
+    dex.config: |
+      connectors:
+      - config:
+          issuer: https://auth.homelab.pk/application/o/argocd/
+          clientID: rvv4nTiay0bCRa4XnML4PUqOECGSopGy3STESqsJ
+          clientSecret: $common-secrets:dex.authentik.clientSecret
+          insecureEnableGroups: true
+          scopes:
+            - openid
+            - profile
+            - email
+        name: authentik
+        type: oidc
+        id: authentik
+    # ignore diffs for HTTProute & external-secrets
+    resource.customizations: |
+      argoproj.io/Application:
+        health.lua: |
+          hs = {}
+          hs.status = "Progressing"
+          hs.message = ""
+          if obj.status ~= nil then
+            if obj.status.health ~= nil then
+              hs.status = obj.status.health.status
+              if obj.status.health.message ~= nil then
+                hs.message = obj.status.health.message
+              end
+            end
+          end
+          return hs
+
+      external-secrets.io/ExternalSecret:
+        ignoreDifferences: |
+          jqPathExpressions:
+            - .spec.data[].remoteRef.conversionStrategy
+            - .spec.data[].remoteRef.decodingStrategy
+            - .spec.data[].remoteRef.metadataPolicy
+
+      gateway.networking.k8s.io/HTTPRoute:
+        ignoreDifferences: |
+          jqPathExpressions:
+            - .spec.parentRefs[].group
+            - .spec.parentRefs[].kind
+            - .spec.rules[].backendRefs[].group
+            - .spec.rules[].backendRefs[].kind
+            - .spec.rules[].backendRefs[].weight
+
+    kustomize.buildOptions: --enable-helm
+    # Cilium resource exclusionsi
+    resource.exclusions: |
+      - apiGroups:
+          - cilium.io
+        kinds:
+          - CiliumIdentity
+        clusters:
+          - "*"
+  params:
+    server.insecure: true
+
+  rbac:
+    create: true
+    policy.csv: |
+        g, ArgoCD Admins, role:admin
+        g, ArgoCD Viewers, role:readonly
+
+## Repo Server
+repoServer:
+  rbac:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+  volumes:
+  - configMap:
+      name: cmp-plugin
+    name: cmp-plugin
+  extraContainers:
+    - name: avp
+      command: [/var/run/argocd/argocd-cmp-server]
+      image: khaliq/avp:0.2
+      env:
+      - name: AVP_TYPE
+        value: kubernetessecret
+      - name: AVP_K8S_NAMESPACE
+        value: argocd
+      - name: AVP_LOG_LEVEL
+        value: debug
+      - name: HELM_CACHE_HOME
+        value: /tmp/helm/.cache
+      - name: HELM_CONFIG_HOME
+        value: /tmp/helm/.config
+      - name: HELM_DATA_HOME
+        value: /tmp/helm/.data
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      volumeMounts:
+      - mountPath: /var/run/argocd
+        name: var-files
+      - mountPath: /home/argocd/cmp-server/plugins
+        name: plugins
+      - mountPath: /tmp
+        name: tmp
+      # Register plugins into sidecar
+      - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+        subPath: avp.yaml
+        name: cmp-plugin
+
+
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 700Mi
+    limits:
+      memory: 4Gi
+
+dex:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+
+redis:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      memory: 1Gi
+
+server:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 1Gi
+
+applicationSet:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 1Gi

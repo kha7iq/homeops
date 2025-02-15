@@ -1,0 +1,27 @@
+bitwarden-sdk-server:
+  enabled: true
+
+image:
+  tag: "v0.10.4"
+
+installCRDs: true
+
+log:
+  level: error
+
+serviceMonitor:
+  enabled: true
+
+webhook:
+  log:
+    level: error
+
+certController:
+  log:
+    level: error
+
+metrics:
+  listen:
+    port: 8080
+  service:
+    enabled: true
