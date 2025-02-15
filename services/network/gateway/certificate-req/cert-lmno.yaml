@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-lmno
+  namespace: gateway
+spec:
+  dnsNames:
+    - "*.lmno.pk"
+    - lmno.pk
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: cloudflare-cluster-issuer
+  secretName: cert-lmno
+  usages:
+    - digital signature
+    - key encipherment

@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-homelab
+  namespace: gateway
+spec:
+  dnsNames:
+    - "*.<path:argocd:common-secrets#homelab-domain>"
+    - <path:argocd:common-secrets#homelab-domain>
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: cloudflare-cluster-issuer
+  secretName: cert-homelab
+  usages:
+    - digital signature
+    - key encipherment
