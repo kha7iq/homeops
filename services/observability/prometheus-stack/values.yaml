@@ -1,0 +1,40 @@
+
+crds:
+  enabled: true
+
+defaultRules:
+  create: true
+  rules:
+    kubeProxy: false
+    windows: false
+
+grafana:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    linux:
+      enabled: true
+    darwin:
+      enabled: false
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    retention: 30d
+    retentionSize: "10GiB"
+    storageSpec:
+      volumeClaimTemplate:
+        metadata:
+          name: pvc
+        spec:
+          storageClassName: "observe"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 15Gi
