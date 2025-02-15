@@ -1,0 +1,6 @@
+machine:
+  network:
+    extraHostEntries:
+      - ip: ${CLUSTER_ENDPOINT_IP}
+        aliases:
+          - ${CLUSTER_NAME}.${INTERNAL_DOMAIN}
