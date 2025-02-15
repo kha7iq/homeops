@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns-server-ext
+  namespace: gateway
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5380
+
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: dns-server-ext
+  namespace: gateway
+  labels:
+    kubernetes.io/service-name: dns-server-ext
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.21
+    conditions:
+      ready: true
+ports:
+  - name: http
+    port: 5380
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: dns-server-ext
+  namespace: gateway
+spec:
+  hostnames:
+    - "dns.<path:argocd:common-secrets#homelab-domain>"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: dns-server-ext
+          port: 80

@@ -1,0 +1,81 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-ext
+  namespace: gateway
+spec:
+  ports:
+    - name: admin
+      port: 9001
+      targetPort: 9001
+    - name: api
+      port: 9000
+      targetPort: 9000
+
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: minio-ext
+  namespace: gateway
+  labels:
+    kubernetes.io/service-name: minio-ext
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.20
+    conditions:
+      ready: true
+ports:
+  - name: admin
+    port: 9001
+  - name: api
+    port: 9000
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: minio-web-ext
+  namespace: gateway
+spec:
+  hostnames:
+    - "minio-web.<path:argocd:common-secrets#homelab-domain>"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/"
+      backendRefs:
+        - name: minio-ext
+          port: 9001
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: minio-ext
+  namespace: gateway
+spec:
+  hostnames:
+    - "minio.<path:argocd:common-secrets#homelab-domain>"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/"
+      backendRefs:
+        - name: minio-ext
+          port: 9000

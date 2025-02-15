@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-ext
+  namespace: gateway
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: immich-ext
+  namespace: gateway
+  labels:
+    kubernetes.io/service-name: immich-ext
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.20
+    conditions:
+      ready: true
+ports:
+  - name: http
+    port: 8080
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: immich-ext
+  namespace: gateway
+spec:
+  hostnames:
+    - "photo.<path:argocd:common-secrets#homelab-domain>"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: immich-ext
+          port: 8080
