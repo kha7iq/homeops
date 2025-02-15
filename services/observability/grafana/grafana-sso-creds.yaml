@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: grafana-sso
+  namespace: grafana
+  annotations:
+      argocd.argoproj.io/sync-wave: "-1"
+      argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  data:
+    - secretKey: client_id
+      remoteRef:
+        key: grafana-sso-client-id
+    - secretKey: client_secret
+      remoteRef:
+        key: grafana-sso-secret-key

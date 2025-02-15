@@ -1,0 +1,188 @@
+deploymentStrategy:
+  type: Recreate
+
+testFramework:
+  enabled: false
+
+extraSecretMounts:
+  - name: auth-generic-oauth-secret-mount
+    secretName: grafana-sso
+    defaultMode: 0440
+    mountPath: /etc/secrets/auth_generic_oauth
+    readOnly: true
+
+plugins:
+  - grafana-clock-panel
+  - grafana-piechart-panel
+  - grafana-worldmap-panel
+  - natel-discrete-panel
+  - vonage-status-panel
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    deleteDatasources:
+      - name: Alertmanager
+        orgId: 1
+    datasources:
+      - name: Prometheus
+        access: proxy
+        type: prometheus
+        url: http://prometheus-operated.prometheus-stack.svc.cluster.local:9090
+        isDefault: true
+        jsonData:
+          prometheusType: Prometheus
+      - name: Alertmanager
+        type: alertmanager
+        access: proxy
+        url: http://alertmanager-operated.prometheus-stack.svc.cluster.local:9093
+        jsonData:
+          implementation: prometheus
+      - name: Loki
+        type: loki
+        url: http://loki.loki.svc.cluster.local:3100
+        jsonData:
+          maxLines: 250
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default
+        disableDeletion: false
+        editable: true
+        folder: ""
+        options:
+          path: /var/lib/grafana/dashboards/default
+        orgId: 1
+        type: file
+
+      - name: kubernetes
+        disableDeletion: false
+        editable: true
+        folder: "Kubernetes"
+        options:
+          path: /var/lib/grafana/dashboards/kubernetes
+        orgId: 1
+        type: file
+
+
+dashboards:
+  default:
+    cert-manager:
+      url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+      datasource: Prometheus
+
+    external-dns:
+      # renovate: depName="External-dns"
+      gnetId: 15038
+      revision: 3
+      datasource: Prometheus
+
+    cloudflared:
+      # renovate: depName="Cloudflare Tunnels (cloudflared)"
+      gnetId: 17457
+      revision: 6
+      datasource:
+        - { name: DS_PROMETHEUS, value: Prometheus }
+
+    node-exporter-full:
+      # renovate: depName="Node Exporter Full"
+      gnetId: 1860
+      revision: 37
+      datasource: Prometheus  
+
+    smartctl-exporter:
+      url: https://raw.githubusercontent.com/blesswinsamuel/grafana-dashboards/refs/heads/main/dashboards/dist/smartctl.json
+      datasource: Prometheus
+
+
+  kubernetes:
+    kubernetes-api-server:
+      # renovate: depName="Kubernetes / System / API Server"
+      gnetId: 15761
+      revision: 17
+      datasource: Prometheus
+    kubernetes-coredns:
+      # renovate: depName="Kubernetes / System / CoreDNS"
+      gnetId: 15762
+      revision: 18
+      datasource: Prometheus
+    kubernetes-global:
+      # renovate: depName="Kubernetes / Views / Global"
+      gnetId: 15757
+      revision: 42
+      datasource: Prometheus
+    kubernetes-namespaces:
+      # renovate: depName="Kubernetes / Views / Namespaces"
+      gnetId: 15758
+      revision: 38
+      datasource: Prometheus
+    kubernetes-nodes:
+      # renovate: depName="Kubernetes / Views / Nodes"
+      gnetId: 15759
+      revision: 32
+      datasource: Prometheus
+    kubernetes-pods:
+      # renovate: depName="Kubernetes / Views / Pods"
+      gNetId: 15760
+      revision: 21
+      datasource: Prometheus
+    kubernetes-volumes:
+      # renovate: depName="K8s / Storage / Volumes / Cluster"
+      gnetId: 11454
+      revision: 14
+      datasource: Prometheus
+
+grafana.ini:
+  paths:
+    data: /var/lib/grafana/
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+  analytics:
+    check_for_updates: false
+    reporting_enabled: false
+  log:
+    mode: console
+  news:
+    news_feed_enabled: false
+  grafana_net:
+    url: https://grafana.net
+  server:
+    root_url: "https://grafana.<path:argocd:common-secrets#homelab-domain>/"
+
+  auth:
+    signout_redirect_url: "https://auth.<path:argocd:common-secrets#homelab-domain>/application/o/grafana/end-session/"
+    oauth_auto_login: true
+  auth.generic_oauth:
+        name: authentik
+        enabled: true
+        client_id: $__file{/etc/secrets/auth_generic_oauth/client_id}
+        client_secret: $__file{/etc/secrets/auth_generic_oauth/client_secret}
+        scopes: "openid profile email"
+        auth_url: "https://auth.<path:argocd:common-secrets#homelab-domain>/application/o/authorize/"
+        token_url: "https://auth.<path:argocd:common-secrets#homelab-domain>/application/o/token/"
+        api_url: "https://auth.<path:argocd:common-secrets#homelab-domain>/application/o/userinfo/"
+        role_attribute_path: contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'
+
+sidecar:
+  dashboards:
+    enabled: true
+    labelValue: ""
+    searchNamespace: ALL
+  datasources:
+    enabled: true
+    labelValue: ""
+    searchNamespace: ALL
+  logLevel: INFO
+
+persistence:
+  type: pvc
+  enabled: true
+  storageClassName: longhorn-retain
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
