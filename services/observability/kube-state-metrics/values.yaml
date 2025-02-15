@@ -1,0 +1,6 @@
+fullnameOverride: "kube-state-metrics"
+
+prometheus:
+  monitor:
+    enabled: true
+
