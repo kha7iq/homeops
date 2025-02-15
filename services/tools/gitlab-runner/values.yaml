@@ -1,0 +1,47 @@
+gitlabUrl: https://gitlab.com/
+
+rbac:
+  create: true
+
+  rules:
+    - resources: ["events"]
+      verbs: ["list", "watch"]
+    - resources: ["namespaces"]
+      verbs: ["create", "delete"]
+    - resources: ["pods"]
+      verbs: ["create","delete","get"]
+    - apiGroups: [""]
+      resources: ["pods/attach","pods/exec"]
+      verbs: ["get","create","patch","delete"]
+    - apiGroups: [""]
+      resources: ["pods/log"]
+      verbs: ["get","list"]
+    - resources: ["secrets"]
+      verbs: ["create","delete","get","update"]
+    - resources: ["serviceaccounts"]
+      verbs: ["get"]
+    - resources: ["services"]
+      verbs: ["create","get"]
+
+metrics:
+  enabled: true
+  portName: metrics
+  port: 9252
+  serviceMonitor:
+    enabled: true
+
+service:
+  enabled: true
+  type: ClusterIP
+
+runners:
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        namespace = "{{.Release.Namespace}}"
+        image = "alpine"
+        [[runners.kubernetes.volumes.pvc]]
+          name = "web-root-lmno-pvc"
+          mount_path = "/lmno-webroot"
+
+runnerToken: "<path:argocd:common-secrets#runner-token>"

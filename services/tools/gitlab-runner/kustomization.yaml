@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# resources:
+#   - gitlab-runner-token.yaml
+
+helmCharts:
+  - name: gitlab-runner
+    repo: https://charts.gitlab.io
+    releaseName: gitlab-runner
+    namespace: gitlab-runner
+    version: 0.70.1
+    valuesFile: values.yaml

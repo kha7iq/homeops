@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: web-root-lmno-pv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /nfs/root-web-lmno
+    server: 192.168.0.20
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-root-lmno-pvc
+spec:
+  storageClassName: nfs
+  volumeName: web-root-lmno-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
