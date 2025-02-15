@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: argocd-apps/observability
+    repoURL: git@gitlab.com:ak-home-lab/homeops.git
+    targetRevision: HEAD
+  destination:
+    namespace: argocd
+    name: in-cluster

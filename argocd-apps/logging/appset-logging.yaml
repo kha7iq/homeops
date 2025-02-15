@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: logging
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - git:
+        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        revision: HEAD
+        directories:
+          - path: services/logging/*
+  template:
+    metadata:
+      name: '{{ path.basename }}'
+      labels:
+        homeops.services.componenet: logging
+    spec:
+      project: default
+      source:
+        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        targetRevision: HEAD
+        path: '{{ path }}'
+      destination:
+        name: in-cluster
+        namespace: logging
+      syncPolicy:
+        automated:
+          prune: true
+        syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true

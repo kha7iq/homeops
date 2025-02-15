@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: security
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - git:
+        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        revision: HEAD
+        directories:
+          - path: services/security/*
+  template:
+    metadata:
+      name: '{{ path.basename }}'
+      labels:
+        homeops.services.component: security
+    spec:
+      project: default
+      source:
+        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        targetRevision: HEAD
+        path: '{{ path }}'
+      destination:
+        name: in-cluster
+        namespace: '{{ path.basename }}'
+      syncPolicy:
+        automated:
+          prune: true
+        syncOptions:
+          - ApplyOutOfSyncOnly=true
+          - CreateNamespace=true
