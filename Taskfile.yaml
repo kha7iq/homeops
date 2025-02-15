@@ -1,0 +1,46 @@
+version: '3'
+
+tasks:
+  crds:
+    desc: Install 'crds'
+    cmds:
+      - kustomize build bootstrap/crds | kubectl apply -f -
+
+  cilium:
+    desc: Install 'cilium' and wait for cilium-operator to be ready
+    cmds:
+      - sleep 5
+      - kustomize build bootstrap/cilium --enable-helm | kubectl apply -f -
+      - |
+        echo "Waiting for cilium-operator deployment to be ready..."
+        kubectl rollout status deployment -l app.kubernetes.io/part-of=cilium -n kube-system
+        kubectl rollout status daemonset -l app.kubernetes.io/part-of=cilium -n kube-system
+
+  csr-approver:
+    desc: Install 'csr-approver'
+    cmds:
+      - kustomize build bootstrap/csr-approver --enable-helm | kubectl apply -f -
+  
+
+  external-secrets:
+    desc: Execute Taskfile in 'external-secrets'
+    dir: bootstrap/external-secrets
+    cmds:
+      - task all
+      - kubectl rollout status deployment -l app.kubernetes.io/instance=external-secrets -n external-secrets
+
+  argocd:
+    desc: Install 'argocd'
+    cmds:
+      - sleep 5
+      - kustomize build bootstrap/argocd --enable-helm | kubectl apply -f -
+      - kubectl rollout status deployment -l app.kubernetes.io/part-of=argocd -n argocd
+
+  bootstrap:
+    desc: Run tasks in the correct order with delays and readiness checks
+    deps:
+      - crds
+      - cilium
+      - csr-approver
+      - external-secrets
+      - argocd
