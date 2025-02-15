@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.2.0/charts/other/app-template/values.schema.json
+
+controllers:
+  main:
+    strategy: RollingUpdate
+
+    containers:
+      main:
+        image:
+          repository: caddy
+          tag: latest
+          pullPolicy: IfNotPresent
+
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 80
+
+
+persistence:
+  media:
+    enabled: true
+    type: nfs
+    server: 192.168.0.20
+    path: /nfs/root-web-lmno
+    globalMounts:
+      - path: "/usr/share/caddy"
