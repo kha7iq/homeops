@@ -1,0 +1,23 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: pg-credentials
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  target:
+    template:
+      data:
+        username: "postgres"
+        ACCESS_KEY_ID: "cnpg-backup-user"
+        password: "{{ .password }}"
+        ACCESS_SECRET_KEY: "{{ .secretKey }}"
+  data:
+    - secretKey: password
+      remoteRef:
+        key: pg-cluster-su-password
+    - secretKey: secretKey
+      remoteRef:
+        key: cnpg-minio-secret

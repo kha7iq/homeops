@@ -1,0 +1,15 @@
+image:
+  tag: "1.24.0"
+
+fullnameOverride: "cnpg-db-operator"
+
+crds:
+  create: true
+
+config:
+  create: true
+  # -- The name of the configmap/secret to use.
+  name: cnpg-controller-manager-config
+
+  grafanaDashboard:
+    create: true

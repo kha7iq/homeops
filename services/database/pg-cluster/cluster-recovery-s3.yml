@@ -1,0 +1,35 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: homeops-postgresql
+spec:
+  description: "PostgreSQL Cluster HomeOps"
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.4
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+# Create a super user when deploying cluster
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: pg-credentials
+# Persistent Storage 
+  storage:
+    storageClass: longhorn-db
+    size: 10Gi
+# Bootstrap the cluster from backup
+  bootstrap:
+    recovery:
+      source: homeops-postgresql
+  externalClusters:
+      - name: homeops-postgresql
+        barmanObjectStore:
+          destinationPath: s3://cnpg-backup/
+          endpointURL: http://192.168.0.20:9000
+          s3Credentials:
+            accessKeyId:
+              name: pg-credentials
+              key: ACCESS_KEY_ID
+            secretAccessKey:
+              name: pg-credentials
+              key: ACCESS_SECRET_KEY
+          wal:
+            maxParallel: 8
