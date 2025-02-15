@@ -1,0 +1,29 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: paperless-creds
+  namespace: paperless
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  target:
+    template:
+      data:
+        client-secret-sso: "{{ .client_secret | b64dec }}"
+        pg-db-password: "{{ .db_pass }}"
+        paperless-secretkey: "{{ .secretkey }}"
+  data:
+    - secretKey: client_secret
+      remoteRef:
+        key: paperless-sso
+    - secretKey: db_pass
+      remoteRef:
+        key: paperless-db-pass
+    - secretKey: secretkey
+      remoteRef:
+        key: paperless-secret-key

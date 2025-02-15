@@ -1,0 +1,71 @@
+
+image:
+  repository: ghcr.io/paperless-ngx/paperless-ngx
+  pullPolicy: IfNotPresent
+  tag: 2.13.5
+
+env:
+  TZ: Asia/Kuala_Lumpur
+  PAPERLESS_URL: "https://docs.<path:argocd:common-secrets#homelab-domain>"
+  PAPERLESS_DBENGINE: postgresql
+  PAPERLESS_DBHOST: "homeops-postgresql-rw.db.svc.cluster.local"
+  PAPERLESS_DBNAME: paperless
+  PAPERLESS_DBUSER: paperless
+  PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+  USERMAP_UID: 1000
+  USERMAP_GID: 1000
+  PAPERLESS_SOCIALACCOUNT_PROVIDERS:
+    valueFrom:
+      secretKeyRef:
+        name: paperless-creds
+        key: client-secret-sso
+  PAPERLESS_DBPASS:
+    valueFrom:
+      secretKeyRef:
+        name: paperless-creds
+        key: pg-db-password
+  PAPERLESS_SECRET_KEY:
+    valueFrom:
+      secretKeyRef:
+        name: paperless-creds
+        key: paperless-secretkey
+
+service:
+  main:
+    ports:
+      http:
+        port: 8000
+
+persistence:
+  data:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/data
+    storageClass: "longhorn-retain"
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  media:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/media
+    storageClass: "nfs"
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  export:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/export
+    storageClass: "longhorn"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  consume:
+    enabled: true
+    retain: true
+    mountPath: /usr/src/paperless/consume
+    storageClass: "longhorn"
+    accessMode: ReadWriteOnce
+    size: 4Gi
+
+redis:
+  enabled: true
+  architecture: standalone
