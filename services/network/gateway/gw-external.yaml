@@ -1,0 +1,33 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external
+  namespace: gateway
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      io.cilium/lb-ipam-ips: 192.168.0.5
+  listeners:
+    - protocol: HTTPS
+      port: 443
+      name: https-tektonops-gateway
+      hostname: tektonops.com
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-tektonops
+      allowedRoutes:
+        namespaces:
+          from: All
+    - protocol: HTTPS
+      port: 443
+      name: https-lmno-gateway
+      hostname: lmno.pk
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-lmno
+      allowedRoutes:
+        namespaces:
+          from: All

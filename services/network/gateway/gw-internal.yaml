@@ -1,0 +1,39 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal
+  namespace: gateway
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      io.cilium/lb-ipam-ips: 192.168.0.10
+  listeners:
+    - name: https-gateway
+      protocol: HTTPS
+      port: 443
+      hostname: "*.<path:argocd:common-secrets#homelab-domain>"
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-homelab
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: http-gateway
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https-domain-gateway
+      protocol: HTTPS
+      port: 443
+      hostname: <path:argocd:common-secrets#homelab-domain>
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: cert-homelab
+      allowedRoutes:
+        namespaces:
+          from: All
