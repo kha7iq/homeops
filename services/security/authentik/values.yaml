@@ -1,0 +1,69 @@
+global:
+  env:
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-creds
+          key: postgres-password
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-creds
+          key: secret-key
+    - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-creds
+          key: bootstrap-password
+    - name: AUTHENTIK_BOOTSTRAP_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: authentik-creds
+          key: bootstrap-token
+# Media Bucket Config
+    - name: AUTHENTIK_STORAGE__MEDIA__S3__SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-creds
+          key: media-bucket-secret
+    - name: AUTHENTIK_STORAGE__MEDIA__BACKEND
+      value: "s3"
+    - name: AUTHENTIK_STORAGE__MEDIA__S3__ACCESS_KEY
+      value: "authentik-bucket-user"
+    - name: AUTHENTIK_STORAGE__MEDIA__S3__BUCKET_NAME
+      value: "authentik-media"
+    - name: AUTHENTIK_STORAGE__MEDIA__S3__ENDPOINT
+      value: "https://minio.<path:argocd:common-secrets#homelab-domain>"
+
+# Authentik Configuration
+    - name: AUTHENTIK_BOOTSTRAP_EMAIL
+      value: "admin@local.dev"
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: "homeops-postgresql-rw.db.svc.cluster.local"
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__USER
+      value: "authentik"
+
+server:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  volumes:
+    - name: custom-css
+      configMap:
+          name: authentik-custom-css
+  volumeMounts:
+    - name: custom-css
+      mountPath: /web/dist/custom.css
+      subPath: custom.css
+
+prometheus:
+  rules:
+    enabled: true
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false

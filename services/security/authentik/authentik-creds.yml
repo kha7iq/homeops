@@ -1,0 +1,33 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: authentik-creds
+  namespace: authentik
+  annotations:
+      argocd.argoproj.io/sync-wave: "-1"
+      argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  data:
+    - secretKey: postgres-password
+      remoteRef:
+        key: authentik-pg-password
+    - secretKey: secret-key
+      remoteRef:
+        key: authentik-secret-key
+    - secretKey: email
+      remoteRef:
+        key: email-address
+    - secretKey: bootstrap-password
+      remoteRef:
+        key: authentik-bootstrap-password
+    - secretKey: bootstrap-token
+      remoteRef:
+        key: authentik-bootstrap-token
+    - secretKey: media-bucket-secret
+      remoteRef:
+        key: authentik-media-bucket-secret
+    
