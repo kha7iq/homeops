@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: spegel
+    repo: oci://ghcr.io/spegel-org/helm-charts
+    releaseName: spegel
+    namespace: spegel
+    version: v0.0.27
+    valuesFile: values.yaml
