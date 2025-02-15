@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: prometheus-smartctl-exporter
+    repo: https://prometheus-community.github.io/helm-charts
+    version: 0.10.0
+    releaseName: "smartctl-exporter"
+    namespace: smartctl-exporter
+    valuesFile: values.yaml
+

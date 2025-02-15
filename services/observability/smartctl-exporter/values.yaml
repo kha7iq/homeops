@@ -1,0 +1,17 @@
+fullnameOverride: "smartctl-exporter"
+serviceMonitor:
+  enabled: true
+
+prometheusRules:
+  enabled: true
+
+# -- Set node affinity 
+affinity:
+  nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "homeops.nodegroup/role"
+                operator: In
+                values:
+                  - "worker"
