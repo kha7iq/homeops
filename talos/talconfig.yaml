@@ -1,0 +1,114 @@
+---
+clusterName: ${CLUSTER_NAME}
+talosVersion: v1.8.0
+kubernetesVersion: v1.30.4
+endpoint: https://${CLUSTER_ENDPOINT_IP}:6443
+domain: ${CLUSTER_DOMAIN_NAME}
+
+cniConfig:
+  name: none
+
+# additional Sans for machine certs and api server.
+additionalMachineCertSans: &sans
+  - cp.${EXTERNAL_DOMAIN}
+  - ${CLUSTER_NAME}.${INTERNAL_DOMAIN}
+additionalApiServerCertSans: *sans
+
+# Pod & Services subnet range
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.245.0.0/16
+
+nodes:
+  - hostname: master01.${EXTERNAL_DOMAIN}
+    ipAddress: 192.168.0.28
+    talosImageURL: ${TALOS_INSTALL_IMAGE_URL_RPI}
+    controlPlane: true
+    machineSpec:
+      mode: metal
+      arch: arm64
+      secureboot: false
+    installDisk: /dev/mmcblk0
+
+  - hostname: node01.${EXTERNAL_DOMAIN}
+    ipAddress: 192.168.0.29
+    controlPlane: false
+    installDiskSelector:
+      size: "<=129GB"
+    machineSpec:
+      mode: metal
+      arch: amd64
+
+  - hostname: node02.${EXTERNAL_DOMAIN}
+    ipAddress: 192.168.0.30
+    controlPlane: false
+    installDiskSelector:
+      size: "<=128GB"
+
+  - hostname: node03.${EXTERNAL_DOMAIN}
+    ipAddress: 192.168.0.31
+    controlPlane: false
+    installDiskSelector:
+      size: "<=128GB"
+    machineSpec:
+      mode: metal
+      arch: amd64
+         
+  - hostname: node04.${EXTERNAL_DOMAIN}
+    ipAddress: 192.168.0.32
+    controlPlane: false
+    installDiskSelector:
+      size: "<=128GB"
+    machineSpec:
+      mode: metal
+      arch: amd64
+
+    
+
+# Patches for all controlPlanes
+controlPlane:
+  schematic:
+    customization:
+      extraKernelArgs:
+        - net.ifnames=0
+      systemExtensions:
+          officialExtensions:
+            - siderolabs/iscsi-tools
+            - siderolabs/util-linux-tools
+
+
+  patches:
+    - "@./patches/controller/api-access.yaml"
+    - "@./patches/controller/cluster.yaml"
+    - "@./patches/controller/disable-admission-controller.yaml"
+
+
+# Patches for all workers
+worker:
+  talosImageURL: ${TALOS_INSTALL_IMAGE_URL}
+  schematic:
+      customization:
+        extraKernelArgs:
+          - net.ifnames=0
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/iscsi-tools
+            - siderolabs/util-linux-tools
+            - siderolabs/wasmedge
+
+  patches:
+    - "@./patches/workers/openebs-local.yaml"
+    - "@./patches/workers/worker-labels.yaml"
+    - "@./patches/workers/sysctl.yaml"
+    - "@./patches/workers/longhorn-disk.yaml"
+
+# Global patches
+patches:
+  - "@./patches/global/containerd.yaml"
+  - "@./patches/global/kubelet.yaml"
+  - "@./patches/global/time.yaml"
+  - "@./patches/global/nfs.yaml"
+  - "@./patches/global/staticHostEntries.yaml"
+  - "@./patches/global/hostdns.yaml"
+  - "@./patches/global/disable-search-domain.yaml"
