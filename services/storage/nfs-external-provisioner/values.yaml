@@ -1,0 +1,16 @@
+image:
+  repository: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner
+  tag: v4.0.2
+
+nfs:
+  server: 192.168.0.20
+  path: /nfs/k8s
+  mountOptions:
+  volumeName: external-provisioner-root
+
+storageClass:
+  create: true
+  defaultClass: false
+  name: nfs
+  reclaimPolicy: Retain
+  accessModes: ReadWriteMany
