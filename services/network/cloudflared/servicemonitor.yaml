@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: "cloudflared-servicemonitor"
+  name: "cloudflared-servicemonitor"
+  namespace: cloudflared
+spec:
+  jobLabel: app.kubernetes.io/name
+  endpoints:
+    - targetPort: metrics
+      path: /metrics
+  selector:
+    matchLabels:
+      app: cloudflared
+  namespaceSelector:
+    matchNames:
+      - cloudflared

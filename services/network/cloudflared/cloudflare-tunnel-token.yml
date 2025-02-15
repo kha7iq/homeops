@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: cloudflare-tunnel-token
+  namespace: cloudflared
+  annotations:
+      argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "12h"
+  target:
+    template:
+      data:
+        cf-tunnel-token: "{{ .token }}"
+  data:
+    - secretKey: token
+      remoteRef:
+        key: cf-tunnel-token

@@ -1,0 +1,11 @@
+
+image:
+  tag: "2024.9.1"
+
+managed:
+  enabled: true
+  existingSecret: "cloudflare-tunnel-token"
+
+metrics:
+  enabled: true
+  port: 9001
