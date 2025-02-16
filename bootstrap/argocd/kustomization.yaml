@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ns.yml
-  - homeops-private-key.yaml
+  # - homeops-private-key.yaml
   - common-secrets.yaml
   - avp-config.yaml
   - cm-plugins.yaml
