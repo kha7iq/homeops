@@ -16,7 +16,7 @@ spec:
         labels:
           argocd.argoproj.io/secret-type: repository
       data:
-        url: git@gitlab.com:ak-home-lab/homeops.git
+        url: https://github.com/kha7iq/homeops.git
         sshPrivateKey: |
          {{ .argocd_repo_key | b64dec }}
   data:

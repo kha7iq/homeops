@@ -8,7 +8,7 @@ spec:
     preserveResourcesOnDeletion: true
   generators:
     - git:
-        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        repoURL: https://github.com/kha7iq/homeops.git
         revision: HEAD
         directories:
           - path: services/observability/*
@@ -20,7 +20,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: git@gitlab.com:ak-home-lab/homeops.git
+        repoURL: https://github.com/kha7iq/homeops.git
         targetRevision: HEAD
         path: '{{ path }}'
       destination:
