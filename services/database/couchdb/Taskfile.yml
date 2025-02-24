@@ -1,0 +1,80 @@
+version: '3'
+# This will create the database and make required changes for obsidian sync to work
+vars:
+  COUCHDB_URL: "https://cdb.example.com"
+  COUCHDB_ADMIN: "user"
+  COUCHDB_PASSWORD: "password"
+  DB_NAME: "obsidian-livesync"
+  NODES:
+    - "couchdb@obsidian-sync-couchdb-0.obsidian-sync-couchdb.db.svc.cluster.local"
+    - "couchdb@obsidian-sync-couchdb-1.obsidian-sync-couchdb.db.svc.cluster.local"
+    - "couchdb@obsidian-sync-couchdb-2.obsidian-sync-couchdb.db.svc.cluster.local"
+tasks:
+  setup-db:
+    desc: "Create the CouchDB database for Obsidian LiveSync"
+    cmds:
+      - |
+        curl -X PUT "{{.COUCHDB_URL}}/{{.DB_NAME}}" \
+        -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+        -H "Content-Type: application/json"
+
+  set-security:
+    desc: "Set security rules for the database"
+    cmds:
+      - |
+        curl -X PUT "{{.COUCHDB_URL}}/{{.DB_NAME}}/_security" \
+        -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "admins": { "names": ["{{.COUCHDB_ADMIN}}"], "roles": [] },
+          "members": { "names": ["{{.COUCHDB_ADMIN}}"], "roles": [] }
+        }'
+
+  enable-cors:
+    desc: "Enable CORS on all nodes"
+    cmds:
+      - |
+        for node in {{range .NODES}}{{.}} {{end}}; do
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/httpd/enable_cors" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"true"'
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/cors/origins" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"app://obsidian.md,capacitor://localhost,http://localhost"'
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/cors/credentials" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"true"'
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/cors/methods" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"GET, PUT, POST, HEAD, DELETE"'
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/cors/headers" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"accept, authorization, content-type, origin, referer"'
+        done
+
+  increase-limits:
+    desc: "Increase HTTP request and document size limits on all nodes"
+    cmds:
+      - |
+        for node in {{range .NODES}}{{.}} {{end}}; do
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/chttpd/max_http_request_size" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"4294967296"'
+          curl -X PUT "{{.COUCHDB_URL}}/_node/${node}/_config/couchdb/max_document_size" \
+               -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" \
+               -H "Content-Type: application/json" -d '"50000000"'
+        done
+
+  verify-settings:
+    desc: "Verify that the configurations were successfully applied"
+    cmds:
+      - |
+        for node in {{range .NODES}}{{.}} {{end}}; do
+          echo "Checking node ${node}"
+          curl -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" "{{.COUCHDB_URL}}/_node/${node}/_config/chttpd/require_valid_user"
+          curl -u "{{.COUCHDB_ADMIN}}:{{.COUCHDB_PASSWORD}}" "{{.COUCHDB_URL}}/_node/${node}/_config/cors/origins"
+        done
+
+  full-setup:
+    desc: "Run all configuration tasks for CouchDB cluster"
+    deps: [setup-db, set-security, enable-cors, increase-limits, verify-settings]
