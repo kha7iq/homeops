@@ -1,0 +1,27 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: obsidian-sync-couchdb
+  namespace: db
+  annotations:
+      argocd.argoproj.io/sync-wave: "-1"
+      argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  data:
+    - secretKey: adminUsername
+      remoteRef:
+        key: couchdb-username
+    - secretKey: adminPassword
+      remoteRef:
+        key: couchdb-admin-password
+    - secretKey: erlangCookie
+      remoteRef:
+        key: couchdb-erlang-cookie
+    - secretKey: cookieAuthSecret
+      remoteRef:
+        key: couchdb-cookie-auth
+   

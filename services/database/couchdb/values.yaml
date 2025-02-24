@@ -1,0 +1,40 @@
+# -- the initial number of nodes in the CouchDB cluster.
+clusterSize: 3
+
+networkPolicy:
+  enabled: false
+
+# Use a service account
+serviceAccount:
+  enabled: true
+  create: true
+
+createAdminSecret: false
+
+persistentVolume:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  storageClass: "longhorn-retain"
+
+persistentVolumeClaimRetentionPolicy:
+  enabled: true
+  whenScaled: Retain
+  whenDeleted: Retain
+
+## The CouchDB image
+image:
+  repository: couchdb
+  tag: 3.4.2
+  pullPolicy: IfNotPresent
+
+# -- couchdbConfig will override default CouchDB configuration settings.
+couchdbConfig:
+  couchdb:
+   uuid: "<path:argocd:common-secrets#couchdb-uuid>"
+  chttpd:
+    bind_address: any
+    # chttpd.require_valid_user disables all the anonymous requests to the port
+    # 5984 when is set to true.
+    require_valid_user: true
