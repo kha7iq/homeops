@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.2.0/charts/other/app-template/values.schema.json
+
+controllers:
+  whoami:
+    strategy: RollingUpdate
+    containers:
+      whoami:
+        image:
+          repository: ghcr.io/traefik/whoami
+          tag: latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 64Mi
+
+
+service:
+  whoami:
+    controller: whoami
+    ports:
+      http:
+        port: 80
