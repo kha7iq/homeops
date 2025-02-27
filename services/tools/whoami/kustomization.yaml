@@ -2,6 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - service.yaml
   - httproute.yaml
-  - deployment.yaml
+
+helmCharts:
+  - name: app-template
+    repo: https://bjw-s.github.io/helm-charts/
+    releaseName: whoami
+    namespace: whoami
+    version: 3.7.1
+    valuesFile: values.yaml
