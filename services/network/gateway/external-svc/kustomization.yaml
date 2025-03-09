@@ -5,3 +5,4 @@ resources:
   - dns-server.yaml
   - minio-external-svc.yaml
   - immich-ext-svc.yaml
+  - jellyfin-ext-svc.yaml
