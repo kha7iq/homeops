@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin-ext
+  namespace: gateway
+spec:
+  ports:
+    - name: http
+      port: 8096
+      targetPort: 8096
+
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: jellyfin-ext
+  namespace: gateway
+  labels:
+    kubernetes.io/service-name: jellyfin-ext
+    endpointslice.kubernetes.io/managed-by: cluster-admins
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.0.20
+    conditions:
+      ready: true
+ports:
+  - name: http
+    port: 8096
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jellyfin-ext
+  namespace: gateway
+spec:
+  hostnames:
+    - "media.<path:argocd:common-secrets#homelab-domain>"
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: gateway
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: jellyfin-ext
+          port: 8096
