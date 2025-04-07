@@ -88,7 +88,7 @@ repoServer:
   extraContainers:
     - name: avp
       command: [/var/run/argocd/argocd-cmp-server]
-      image: khaliq/avp:0.2
+      image: khaliq/avp:0.3
       env:
       - name: AVP_TYPE
         value: kubernetessecret
