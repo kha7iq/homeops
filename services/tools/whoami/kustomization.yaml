@@ -9,5 +9,5 @@ helmCharts:
     repo: https://bjw-s.github.io/helm-charts/
     releaseName: whoami
     namespace: whoami
-    version: 3.7.1
+    version: 3.7.3
     valuesFile: values.yaml
