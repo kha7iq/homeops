@@ -7,31 +7,54 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^bjw-s/.*"],
-      "labels": ["helm", "bjw-s"],
+      "labels": [
+        "helm",
+        "bjw-s"
+      ],
+      "semanticCommitType": "chore",
+      "matchPackageNames": [
+        "/^bjw-s/.*/"
+      ]
+    },
+    {
+      "matchManagers": [
+        "helm-values"
+      ],
+      "labels": [
+        "helm"
+      ],
       "semanticCommitType": "chore"
     },
     {
-      "matchManagers": ["helm-values"],
-      "labels": ["helm"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "labels": [
+        "terraform"
+      ],
       "semanticCommitType": "chore"
     },
     {
-      "matchManagers": ["terraform"],
-      "labels": ["terraform"],
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "labels": [
+        "renovate"
+      ],
       "semanticCommitType": "chore"
     },
     {
-      "matchDatasources": ["github-tags"],
-      "labels": ["renovate"],
-      "semanticCommitType": "chore"
-    },
-    {
-      "matchManagers": ["github-actions"],
-      "labels": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "labels": [
+        "github-actions"
+      ],
       "semanticCommitType": "chore"
     }
   ],
-  "assignees": ["kha7iq"],
+  "assignees": [
+    "kha7iq"
+  ],
   "timezone": "Asia/Kuala_Lumpur"
 }
