@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "commitBodyTable": true,
-  "dependencyDashboardTitle": "🛠 Dependency Updates",
+  "dependencyDashboardTitle": "🤖 Dependency Updates",
   "extends": [
     "config:recommended"
   ],
