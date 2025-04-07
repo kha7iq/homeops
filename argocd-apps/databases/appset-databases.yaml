@@ -29,8 +29,6 @@ spec:
         name: in-cluster
         namespace: db
       syncPolicy:
-        automated:
-          prune: true
         syncOptions:
           - ApplyOutOfSyncOnly=true
           - ServerSideApply=true
