@@ -9,5 +9,5 @@ helmCharts:
     repo: oci://8gears.container-registry.com/library/
     releaseName: n8n
     namespace: n8n
-    version: 0.25.0
+    version: 0.25.2
     valuesFile: values.yaml
