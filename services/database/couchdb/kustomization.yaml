@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: couchdb
     repo: https://apache.github.io/couchdb-helm
-    version: 4.5.6
+    version: 4.6.0
     releaseName: "obsidian-sync"
     includeCRDs: true
     namespace: db
