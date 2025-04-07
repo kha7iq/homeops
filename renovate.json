@@ -1,6 +1,37 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "commitBodyTable": true,
+  "dependencyDashboardTitle": "🛠 Dependency Updates",
   "extends": [
     "config:recommended"
-  ]
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^bjw-s/.*"],
+      "labels": ["helm", "bjw-s"],
+      "semanticCommitType": "chore"
+    },
+    {
+      "matchManagers": ["helm"],
+      "labels": ["helm"],
+      "semanticCommitType": "chore"
+    },
+    {
+      "matchManagers": ["terraform"],
+      "labels": ["terraform"],
+      "semanticCommitType": "chore"
+    },
+    {
+      "matchDatasources": ["github-tags"],
+      "labels": ["renovate"],
+      "semanticCommitType": "chore"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "labels": ["github-actions"],
+      "semanticCommitType": "chore"
+    }
+  ],
+  "assignees": ["kha7iq"],
+  "timezone": "Asia/Kuala_Lumpur"
 }
