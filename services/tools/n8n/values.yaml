@@ -2,5 +2,3 @@ persistence:
   enabled: true
   type: dynamic 
 
-image:
-  tag: "1.55.3"

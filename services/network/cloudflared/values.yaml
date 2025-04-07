@@ -1,6 +1,4 @@
 
-image:
-  tag: "2024.9.1"
 
 managed:
   enabled: true

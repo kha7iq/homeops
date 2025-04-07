@@ -25,8 +25,6 @@ persistentVolumeClaimRetentionPolicy:
 
 ## The CouchDB image
 image:
-  repository: couchdb
-  tag: 3.4.3
   pullPolicy: IfNotPresent
 
 # -- couchdbConfig will override default CouchDB configuration settings.
