@@ -14,30 +14,30 @@ resources:
   - clusterStore.yaml
   - servicemonitor.yaml
 
-configMapGenerator:
-  - name: org-config
-    envs:
-      - .env
+# configMapGenerator:
+#   - name: org-config
+#     envs:
+#       - .env
 
-replacements:
-  - source:
-      kind: ConfigMap
-      name: org-config
-      fieldPath: data.ORGANIZATION_ID
-    targets:
-      - select:
-          kind: ClusterSecretStore
-          name: bitwarden-cluster-secretsmanager
-        fieldPaths:
-          - spec.provider.bitwardensecretsmanager.organizationID
+# replacements:
+#   - source:
+#       kind: ConfigMap
+#       name: org-config
+#       fieldPath: data.ORGANIZATION_ID
+#     targets:
+#       - select:
+#           kind: ClusterSecretStore
+#           name: bitwarden-cluster-secretsmanager
+#         fieldPaths:
+#           - spec.provider.bitwardensecretsmanager.organizationID
 
-  - source:
-      kind: ConfigMap
-      name: org-config
-      fieldPath: data.PROJECT_ID
-    targets:
-      - select:
-          kind: ClusterSecretStore
-          name: bitwarden-cluster-secretsmanager
-        fieldPaths:
-          - spec.provider.bitwardensecretsmanager.projectID
+#   - source:
+#       kind: ConfigMap
+#       name: org-config
+#       fieldPath: data.PROJECT_ID
+#     targets:
+#       - select:
+#           kind: ClusterSecretStore
+#           name: bitwarden-cluster-secretsmanager
+#         fieldPaths:
+#           - spec.provider.bitwardensecretsmanager.projectID
