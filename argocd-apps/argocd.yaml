@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: argocd
   namespace: argocd
-spec:
+spec:  
   project: default
   source:
     path: bootstrap/argocd
@@ -12,3 +12,9 @@ spec:
   destination:
     namespace: argocd
     name: in-cluster
+  syncPolicy:
+    automated:
+      prune: false
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true     

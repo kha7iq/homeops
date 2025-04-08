@@ -12,3 +12,9 @@ spec:
   destination:
     namespace: kube-system
     name: in-cluster
+  syncPolicy:
+    automated:
+      prune: false
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true     
