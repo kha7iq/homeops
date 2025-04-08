@@ -24,13 +24,8 @@ controllers:
 
         securityContext:
           capabilities:
-            drop:
-              - ALL
             add:
               - NET_ADMIN
-              - PERFMON
-              - BPF
-              - NET_RAW
 
         resources:
           limits:
