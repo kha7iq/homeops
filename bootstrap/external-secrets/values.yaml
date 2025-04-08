@@ -1,9 +1,6 @@
 bitwarden-sdk-server:
   enabled: true
 
-image:
-  tag: "v0.10.4"
-
 installCRDs: true
 
 log:
