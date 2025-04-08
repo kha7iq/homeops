@@ -78,7 +78,7 @@ For detailed steps on bootstrapping your environment, check out the [Bootstrap G
 
 ## ✅ TODO List
 
-- [ ] 🔧 **Configure Renovate for Automated Dependency Updates**  
+- [x] 🔧 **Configure Renovate for Automated Dependency Updates**  
 
 - [ ] 🚀 **Improve networking policies with Cilium.**  
 
