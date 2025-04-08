@@ -1,15 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-generatorOptions:
-  disableNameSuffixHash: true
-configMapGenerator:
-  - name: agent-config
-    literals:
-      - NB_HOSTNAME="homeOps-nodes"
-      - NB_LOG_LEVEL="warn"
-      - NB_CONFIG="/config/config.json"
-
 resources:
   - netbird-agent-setup-key.yml
-  - daemon-set.yaml
+
+helmCharts:
+  - name: app-template
+    repo: https://bjw-s.github.io/helm-charts/
+    releaseName: netbird
+    namespace: netbird
+    version: 3.7.3
+    valuesFile: values.yaml

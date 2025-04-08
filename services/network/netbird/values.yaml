@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.7.3/charts/other/app-template/values.schema.json
+
+controllers:
+  main:
+    type: daemonset
+
+    containers:
+      main:
+        image:
+          repository: docker.io/netbirdio/netbird
+          tag: 0.36.5
+          pullPolicy: IfNotPresent
+        env:
+          - name: NB_HOSTNAME
+            value: "homeOps-nodes"
+          - name: NB_LOG_LEVEL
+            value: "warn"
+          - name: NB_SETUP_KEY
+            valueFrom:
+              secretKeyRef:
+                name: netbird-agent-setup-key
+                key: setupKey
+
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_ADMIN
+              - PERFMON
+              - BPF
+              - NET_RAW
+
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+service:
+  main:
+    enabled: false
+    controller: main
+
