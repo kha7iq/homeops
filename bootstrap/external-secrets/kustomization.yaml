@@ -10,9 +10,8 @@ helmCharts:
     valuesFile: values.yaml
 
 
-resources:
-  - clusterStore.yaml
-  - servicemonitor.yaml
+# resources:
+#   - clusterStore.yaml
 
 # configMapGenerator:
 #   - name: org-config
