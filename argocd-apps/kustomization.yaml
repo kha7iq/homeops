@@ -3,8 +3,7 @@ kind: Kustomization
 
 
 resources:
-  - network.yaml
-  - databases.yaml
-  - observability.yaml
-  - security.yaml
-  - tools.yaml
+  - argocd.yaml
+  - cilium.yaml
+  - csr-approver.yaml
+  - external-secrets.yaml
