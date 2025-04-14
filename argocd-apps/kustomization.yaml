@@ -7,3 +7,10 @@ resources:
   - cilium.yaml
   - csr-approver.yaml
   - external-secrets.yaml
+  - network/appset-network.yaml
+  - databases/appset-databases.yaml
+  - logging/appset-logging.yaml
+  - security/appset-security.yaml
+  - observability/appset-observability.yaml
+  - tools/appset-tools.yaml
+  - web/appset-web.yaml
