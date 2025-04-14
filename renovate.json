@@ -2,59 +2,24 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "commitBodyTable": true,
   "dependencyDashboardTitle": "🤖 Dependency Updates",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
+  "assignees": ["kha7iq"],
+  "timezone": "Asia/Kuala_Lumpur",
   "packageRules": [
     {
-      "labels": [
-        "helm",
-        "bjw-s"
-      ],
-      "semanticCommitType": "chore",
-      "matchPackageNames": [
-        "/^bjw-s/.*/"
-      ]
+      "matchManagers": ["helm-values"],
+      "labels": ["helm"],
+      "semanticCommitType": "bot"
     },
     {
-      "matchManagers": [
-        "helm-values"
-      ],
-      "labels": [
-        "helm"
-      ],
-      "semanticCommitType": "chore"
+      "matchManagers": ["terraform"],
+      "labels": ["terraform"],
+      "semanticCommitType": "bot"
     },
     {
-      "matchManagers": [
-        "terraform"
-      ],
-      "labels": [
-        "terraform"
-      ],
-      "semanticCommitType": "chore"
-    },
-    {
-      "matchDatasources": [
-        "github-tags"
-      ],
-      "labels": [
-        "renovate"
-      ],
-      "semanticCommitType": "chore"
-    },
-    {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "labels": [
-        "github-actions"
-      ],
-      "semanticCommitType": "chore"
+      "matchManagers": ["kustomize"],
+      "labels": ["kustomize"],
+      "semanticCommitType": "bot"
     }
-  ],
-  "assignees": [
-    "kha7iq"
-  ],
-  "timezone": "Asia/Kuala_Lumpur"
+  ]
 }
