@@ -16,5 +16,4 @@ spec:
     automated:
       prune: false
     syncOptions:
-      - ApplyOutOfSyncOnly=true
       - ServerSideApply=true     

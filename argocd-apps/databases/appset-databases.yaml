@@ -30,6 +30,5 @@ spec:
         namespace: db
       syncPolicy:
         syncOptions:
-          - ApplyOutOfSyncOnly=true
           - ServerSideApply=true
           - CreateNamespace=true        

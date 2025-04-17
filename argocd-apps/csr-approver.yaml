@@ -14,7 +14,6 @@ spec:
     name: in-cluster
   syncPolicy:
     automated:
-      prune: false
+      prune: true
     syncOptions:
-      - ApplyOutOfSyncOnly=true
       - ServerSideApply=true     
