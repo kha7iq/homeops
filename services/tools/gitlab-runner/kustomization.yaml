@@ -9,5 +9,5 @@ helmCharts:
     repo: https://charts.gitlab.io
     releaseName: gitlab-runner
     namespace: gitlab-runner
-    version: 0.75.1
+    version: 0.76.0
     valuesFile: values.yaml
