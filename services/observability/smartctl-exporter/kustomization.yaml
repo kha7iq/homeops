@@ -4,7 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: prometheus-smartctl-exporter
     repo: https://prometheus-community.github.io/helm-charts
-    version: 0.13.0
+    version: 0.14.0
     releaseName: "smartctl-exporter"
     namespace: smartctl-exporter
     valuesFile: values.yaml
