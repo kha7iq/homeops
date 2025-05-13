@@ -33,6 +33,14 @@ couchdbConfig:
    uuid: "<path:argocd:common-secrets#couchdb-uuid>"
   chttpd:
     bind_address: any
+    # enable CORS on the HTTP interface
+    enable_cors: "true"
     # chttpd.require_valid_user disables all the anonymous requests to the port
     # 5984 when is set to true.
     require_valid_user: true
+  cors:
+    # match your --data '"app://obsidian.md,capacitor://localhost,http://localhost"'
+    origins: "app://obsidian.md,capacitor://localhost,http://localhost"
+    credentials: "true"
+    methods: "GET, PUT, POST, HEAD, DELETE"
+    headers: "accept, authorization, content-type, origin, referer"
