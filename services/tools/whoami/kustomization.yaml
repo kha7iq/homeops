@@ -6,8 +6,8 @@ resources:
 
 helmCharts:
   - name: app-template
-    repo: https://bjw-s.github.io/helm-charts/
+    repo: https://bjw-s-labs.github.io/helm-charts
     releaseName: whoami
     namespace: whoami
-    version: 3.7.3
+    version: 4.0.1
     valuesFile: values.yaml
