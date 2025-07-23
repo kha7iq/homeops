@@ -9,7 +9,7 @@ resources:
 helmCharts:
   - name: authentik
     repo: https://charts.goauthentik.io
-    version: 2025.2.4
+    version: 2025.6.0
     releaseName: authentik
     namespace: authentik
     valuesFile: values.yaml
