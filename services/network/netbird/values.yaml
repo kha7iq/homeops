@@ -26,6 +26,8 @@ controllers:
           capabilities:
             add:
               - NET_ADMIN
+              - SYS_RESOURCE
+              - SYS_ADMIN
 
         resources:
           limits:
