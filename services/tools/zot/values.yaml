@@ -30,6 +30,11 @@ configFiles:
         "writeTimeout": "60s",
         "externalURL": "https://registry.<path:argocd:common-secrets#homelab-domain>"
       },
+      "extensions": {
+      "ui": {
+        "enable": true
+      }
+    },
       "log": { "level": "info" }
     }
 
