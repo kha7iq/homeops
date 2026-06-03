@@ -32,7 +32,7 @@ configFiles:
     {
       "storage": {
         "rootDirectory": "/var/lib/registry",
-        "dedupe": true,
+        "dedupe": false,
         "storageDriver": {
           "name": "s3",
           "region": "us-east-1",
@@ -45,7 +45,11 @@ configFiles:
       },
       "http": {
         "address": "0.0.0.0",
-        "port": "5000"
+        "port": "5000",
+        "readTimeout": "60s",
+        "writeTimeout": "60s",
+        "externalURL": "https://registry.homelab.pk",
+        "compat": ["docker2s2"]
       },
       "extensions": {
         "search": { "enable": true },
