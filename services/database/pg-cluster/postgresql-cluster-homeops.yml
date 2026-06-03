@@ -4,11 +4,10 @@ metadata:
   name: homeops-postgresql
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    argocd.argoproj.io/hook: PostSync
 spec:
   description: "PostgreSQL Cluster HomeOps"
   imageName: ghcr.io/cloudnative-pg/postgresql:16.4
-  instances: 1
+  instances: 3
   primaryUpdateStrategy: unsupervised
 # Enbale Monitoring of the cluster based on a configmap created before.
   monitoring:
