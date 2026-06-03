@@ -31,13 +31,15 @@ configFiles:
         "externalURL": "https://registry.<path:argocd:common-secrets#homelab-domain>"
       },
       "extensions": {
-      "ui": {
-        "enable": true
-      }
-    },
+        "search": {
+          "enable": true
+        },
+        "ui": {
+          "enable": true
+        }
+      },
       "log": { "level": "info" }
     }
-
 persistence: true
 pvc:
   create: true
