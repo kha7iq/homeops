@@ -8,7 +8,7 @@ metadata:
 spec:
   description: "PostgreSQL Cluster HomeOps"
   imageName: ghcr.io/cloudnative-pg/postgresql:16.4
-  instances: 3
+  instances: 1
   primaryUpdateStrategy: unsupervised
 # Enbale Monitoring of the cluster based on a configmap created before.
   monitoring:
@@ -22,7 +22,7 @@ spec:
     name: pg-credentials
 # Persistent Storage 
   storage:
-    storageClass: longhorn-db
+    storageClass: longhorn-retain
     size: 10Gi
 
 # Backup properties

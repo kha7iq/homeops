@@ -13,7 +13,7 @@ spec:
     name: pg-credentials
 # Persistent Storage 
   storage:
-    storageClass: longhorn-db
+    storageClass: longhorn-retain
     size: 10Gi
 # Bootstrap the cluster from backup
   bootstrap:
