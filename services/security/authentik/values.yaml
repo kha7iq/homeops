@@ -29,11 +29,11 @@ global:
     - name: AUTHENTIK_STORAGE__MEDIA__BACKEND
       value: "s3"
     - name: AUTHENTIK_STORAGE__MEDIA__S3__ACCESS_KEY
-      value: "authentik-bucket-user"
+      value: "99pwbI9vQzHN4J9L4b0G"
     - name: AUTHENTIK_STORAGE__MEDIA__S3__BUCKET_NAME
       value: "authentik-media"
     - name: AUTHENTIK_STORAGE__MEDIA__S3__ENDPOINT
-      value: "https://minio.<path:argocd:common-secrets#homelab-domain>"
+      value: "https://s3.<path:argocd:common-secrets#homelab-domain>"
 
 # Authentik Configuration
     - name: AUTHENTIK_BOOTSTRAP_EMAIL
