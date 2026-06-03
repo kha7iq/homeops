@@ -16,7 +16,7 @@ spec:
             imagePullPolicy: IfNotPresent
             env:
               - name: AWS_ACCESS_KEY_ID
-                value: talos-etcd-backup-account
+                value: qtjQNvMUJWGqysgUh9Jt
               - name: AWS_SECRET_ACCESS_KEY
                 valueFrom: 
                   secretKeyRef:
