@@ -11,8 +11,8 @@ spec:
     template:
       data:
         username: "postgres"
-        ACCESS_KEY_ID: "cnpg-backup-user"
         password: "{{ .password }}"
+        ACCESS_KEY_ID: "FRbNcaN9KqJ9T0mWmTQk"
         ACCESS_SECRET_KEY: "{{ .secretKey }}"
   data:
     - secretKey: password
