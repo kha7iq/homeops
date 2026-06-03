@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - dns-server.yaml
+  - rustfs-external-svc.yaml
   - minio-external-svc.yaml
   - immich-ext-svc.yaml
   - jellyfin-ext-svc.yaml
