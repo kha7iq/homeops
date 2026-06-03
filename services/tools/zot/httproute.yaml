@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zot
+  namespace: zot
+spec:
+  parentRefs:
+    - name: internal
+      namespace: gateway
+  hostnames:
+    - "registry.<path:argocd:common-secrets#homelab-domain>"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: zot
+          port: 5000
