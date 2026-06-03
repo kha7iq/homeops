@@ -55,14 +55,14 @@ nodes:
       mode: metal
       arch: amd64
          
-  - hostname: node04.${EXTERNAL_DOMAIN}
-    ipAddress: 192.168.0.32
-    controlPlane: false
-    installDiskSelector:
-      size: "<=128GB"
-    machineSpec:
-      mode: metal
-      arch: amd64
+  # - hostname: node04.${EXTERNAL_DOMAIN}
+  #   ipAddress: 192.168.0.32
+  #   controlPlane: false
+  #   installDiskSelector:
+  #     size: "<=128GB"
+  #   machineSpec:
+  #     mode: metal
+  #     arch: amd64
 
     
 
@@ -98,10 +98,10 @@ worker:
             - siderolabs/wasmedge
 
   patches:
-    - "@./patches/workers/openebs-local.yaml"
+    # - "@./patches/workers/openebs-local.yaml"
     - "@./patches/workers/worker-labels.yaml"
     - "@./patches/workers/sysctl.yaml"
-    - "@./patches/workers/longhorn-disk.yaml"
+    # - "@./patches/workers/longhorn-disk.yaml"
 
 # Global patches
 patches:
