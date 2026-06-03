@@ -1,0 +1,17 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: zot-creds
+  namespace: zot
+  annotations:
+      argocd.argoproj.io/sync-wave: "-1"
+      argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "24h"
+  data:
+    - secretKey: secretkey
+      remoteRef:
+        key: zot-rustfs-secret

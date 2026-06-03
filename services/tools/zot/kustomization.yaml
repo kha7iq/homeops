@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - httproute.yaml
+  - zot-creds.yml
 
 helmCharts:
   - name: zot

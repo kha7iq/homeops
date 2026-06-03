@@ -15,6 +15,14 @@ service:
   annotations: {}
   clusterIP: null
 
+env:
+  - name: AWS_ACCESS_KEY_ID
+    value: "xwQ6RMnu4zpoy8DiwsWm"
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: zot-creds
+        key: secretkey
 
 # If mountConfig is true the configMap named $CHART_RELEASE-config is mounted
 # on the pod's '/etc/zot' directory
@@ -22,31 +30,30 @@ mountConfig: true
 configFiles:
   config.json: |-
     {
-      "storage": { "rootDirectory": "/var/lib/registry" },
+      "storage": {
+        "rootDirectory": "/var/lib/registry",
+        "dedupe": true,
+        "storageDriver": {
+          "name": "s3",
+          "region": "us-east-1",
+          "regionendpoint": "http://192.168.0.20:9000",
+          "bucket": "zot-registry",
+          "secure": false,
+          "skipverify": false,
+          "forcepathstyle": true
+        }
+      },
       "http": {
         "address": "0.0.0.0",
-        "port": "5000",
-        "readTimeout": "60s",
-        "writeTimeout": "60s",
-        "externalURL": "https://registry.<path:argocd:common-secrets#homelab-domain>"
+        "port": "5000"
       },
       "extensions": {
-        "search": {
-          "enable": true
-        },
-        "ui": {
-          "enable": true
-        }
+        "search": { "enable": true },
+        "ui": { "enable": true }
       },
       "log": { "level": "info" }
     }
-persistence: true
-pvc:
-  create: true
-  name: null
-  accessModes: ["ReadWriteOnce"]
-  storage: 20Gi
-  storageClassName: longhorn-retain
+
 
 strategy:
   type: RollingUpdate
