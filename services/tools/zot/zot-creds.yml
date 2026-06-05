@@ -1,17 +1,78 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: zot-creds
+  name: zot-oidc-creds
   namespace: zot
   annotations:
-      argocd.argoproj.io/sync-wave: "-1"
-      argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
 spec:
   secretStoreRef:
     name: bitwarden-cluster-secretsmanager
     kind: ClusterSecretStore
   refreshInterval: "24h"
+  target:
+    name: zot-oidc-creds
+    template:
+      engineVersion: v2
+      data:
+        oidc-credentials.json: |
+          {
+            "clientid": "{{ .client_id }}",
+            "clientsecret": "{{ .client_secret }}"
+          }
+  data:
+    - secretKey: client_id
+      remoteRef:
+        key: zot-oidc-client-id
+    - secretKey: client_secret
+      remoteRef:
+        key: zot-oidc-client-secret
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: zot-htpasswd
+  namespace: zot
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "24h"
+  target:
+    name: zot-htpasswd
+    template:
+      engineVersion: v2
+      data:
+        htpasswd: '{{ .htpasswd }}'
+  data:
+    - secretKey: htpasswd
+      remoteRef:
+        key: zot-htpasswd
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: zot-rustfs-creds
+  namespace: zot
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "24h"
+  target:
+    name: zot-rustfs-creds
   data:
     - secretKey: secretkey
       remoteRef:
         key: zot-rustfs-secret
+    - secretKey: accesskey
+      remoteRef:
+        key: zot-rustfs-accesskey
