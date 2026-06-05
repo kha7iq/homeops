@@ -1,9 +1,12 @@
 replicaCount: 1
+
 image:
   repository: ghcr.io/project-zot/zot-linux-amd64
   pullPolicy: IfNotPresent
   # tag: "v2.1.17"
+
 namespace: ""
+
 serviceAccount:
   create: true
   name: ""
@@ -17,16 +20,24 @@ service:
 
 env:
   - name: AWS_ACCESS_KEY_ID
-    value: "xwQ6RMnu4zpoy8DiwsWm"
+    valueFrom:
+      secretKeyRef:
+        name: zot-rustfs-creds
+        key: accesskey
   - name: AWS_SECRET_ACCESS_KEY
     valueFrom:
       secretKeyRef:
-        name: zot-creds
+        name: zot-rustfs-creds
         key: secretkey
 
-# If mountConfig is true the configMap named $CHART_RELEASE-config is mounted
-# on the pod's '/etc/zot' directory
+externalSecrets:
+  - secretName: "zot-oidc-creds"
+    mountPath: "/etc/zot/oidc"
+  - secretName: "zot-htpasswd"
+    mountPath: "/etc/zot/htpasswd"
+
 mountConfig: true
+
 configFiles:
   config.json: |-
     {
@@ -48,17 +59,37 @@ configFiles:
         "port": "5000",
         "readTimeout": "60s",
         "writeTimeout": "60s",
-        "externalURL": "https://registry.homelab.pk",
-        "compat": ["docker2s2"]
+        "externalUrl": "https://registry.<path:argocd:common-secrets#homelab-domain>",
+        "compat": ["docker2s2"],
+        "auth": {
+          "htpasswd": {
+            "path": "/etc/zot/htpasswd/htpasswd"
+          },
+          "openid": {
+            "providers": {
+              "oidc": {
+                "name": "Authentik",
+                "credentialsFile": "/etc/zot/oidc/oidc-credentials.json",
+                "issuer": "https://auth.<path:argocd:common-secrets#homelab-domain>/application/o/zot/",
+                "keypath": "",
+                "scopes": ["openid", "profile", "email", "groups"]
+              }
+            }
+          }
+        }
       },
       "extensions": {
-        "search": { "enable": true },
-        "ui": { "enable": true }
+        "search": {
+          "enable": true
+        },
+        "ui": {
+          "enable": true
+        }
       },
-      "log": { "level": "info" }
+      "log": {
+        "level": "info"
+      }
     }
-
 
 strategy:
   type: RollingUpdate
-
