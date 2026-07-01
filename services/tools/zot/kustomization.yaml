@@ -10,5 +10,5 @@ helmCharts:
     repo: http://zotregistry.dev/helm-charts
     releaseName: zot
     namespace: zot
-    version: 0.1.116
+    version: 0.1.119
     valuesFile: values.yaml
