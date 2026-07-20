@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: cloudflared
     repo: https://charts.kubito.dev
-    version: 1.7.7
+    version: 1.7.9
     releaseName: "cloudflared"
     includeCRDs: true
     namespace: cloudflared
