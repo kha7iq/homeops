@@ -1,0 +1,19 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: inkvoice-creds
+spec:
+  secretStoreRef:
+    name: bitwarden-cluster-secretsmanager
+    kind: ClusterSecretStore
+  refreshInterval: "0"
+  target:
+    name: inkvoice-creds
+    creationPolicy: Owner
+  data:
+    - secretKey: JWT_SECRET
+      remoteRef:
+        key: inkvoice-jwt
+    - secretKey: ADMIN_PASS
+      remoteRef:
+        key: ak-password

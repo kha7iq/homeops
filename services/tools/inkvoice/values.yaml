@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.2.0/charts/other/app-template/values.schema.json
+
+controllers:
+  inkvoice:
+    strategy: RollingUpdate
+    
+    containers:
+      inkvoice:
+        image:
+          repository: ghcr.io/pigontech/inkvoice
+          tag: 0.3
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 300Mi
+
+        envFrom:
+          - secretRef:
+              name: inkvoice-creds
+
+service:
+  inkvoice:
+    controller: inkvoice
+    ports:
+      http:
+        port: 3000
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    storageClass: longhorn-retain
+    size: 5Gi
+    globalMounts:
+      - path: /app/data
