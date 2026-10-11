@@ -1,7 +1,7 @@
 ---
 clusterName: ${CLUSTER_NAME}
-talosVersion: v1.8.0
-kubernetesVersion: v1.30.4
+talosVersion: v1.13.11
+kubernetesVersion: v1.32.2
 endpoint: https://${CLUSTER_ENDPOINT_IP}:6443
 domain: ${CLUSTER_DOMAIN_NAME}
 
@@ -53,18 +53,7 @@ nodes:
       size: "<=128GB"
     machineSpec:
       mode: metal
-      arch: amd64
-         
-  # - hostname: node04.${EXTERNAL_DOMAIN}
-  #   ipAddress: 192.168.0.32
-  #   controlPlane: false
-  #   installDiskSelector:
-  #     size: "<=128GB"
-  #   machineSpec:
-  #     mode: metal
-  #     arch: amd64
-
-    
+      arch: amd64  
 
 # Patches for all controlPlanes
 controlPlane:
@@ -98,10 +87,9 @@ worker:
             - siderolabs/wasmedge
 
   patches:
-    # - "@./patches/workers/openebs-local.yaml"
     - "@./patches/workers/worker-labels.yaml"
     - "@./patches/workers/sysctl.yaml"
-    # - "@./patches/workers/longhorn-disk.yaml"
+    - "@./patches/workers/longhorn-disk.yaml"
 
 # Global patches
 patches:
