@@ -10,5 +10,5 @@ helmCharts:
     repo: https://bjw-s-labs.github.io/helm-charts
     releaseName: inkvoice
     namespace: inkvoice
-    version:  5.2.1
+    version:  5.3.0
     valuesFile: values.yaml
