@@ -9,7 +9,7 @@ controllers:
       main:
         image:
           repository: docker.io/netbirdio/netbird
-          tag: 0.78.2
+          tag: 0.80.0
           pullPolicy: IfNotPresent
         env:
           - name: NB_HOSTNAME
